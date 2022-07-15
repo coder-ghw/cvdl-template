@@ -1,54 +1,23 @@
-# PyTorch Template Project
+# PyTorch 深度学习的实验
 PyTorch deep learning project made easy.
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
-
-* [PyTorch Template Project](#pytorch-template-project)
-	* [Requirements](#requirements)
-	* [Features](#features)
-	* [Folder Structure](#folder-structure)
-	* [Usage](#usage)
-		* [Config file format](#config-file-format)
-		* [Using config files](#using-config-files)
-		* [Resuming from checkpoints](#resuming-from-checkpoints)
-    * [Using Multiple GPU](#using-multiple-gpu)
-	* [Customization](#customization)
-		* [Custom CLI options](#custom-cli-options)
-		* [Data Loader](#data-loader)
-		* [Trainer](#trainer)
-		* [Model](#model)
-		* [Loss](#loss)
-		* [metrics](#metrics)
-		* [Additional logging](#additional-logging)
-		* [Validation data](#validation-data)
-		* [Checkpoints](#checkpoints)
-    * [Tensorboard Visualization](#tensorboard-visualization)
-	* [Contribution](#contribution)
-	* [TODOs](#todos)
-	* [License](#license)
-	* [Acknowledgements](#acknowledgements)
-
-<!-- /code_chunk_output -->
-
-## Requirements
+## 环境
 * Python >= 3.5 (3.6 recommended)
 * PyTorch >= 0.4 (1.2 recommended)
 * tqdm (Optional for `test.py`)
 * tensorboard >= 1.14 (see [Tensorboard Visualization](#tensorboard-visualization))
 
-## Features
-* Clear folder structure which is suitable for many deep learning projects.
-* `.json` config file support for convenient parameter tuning.
-* Customizable command line options for more convenient parameter tuning.
-* Checkpoint saving and resuming.
-* Abstract base classes for faster development:
+## 功能简介
+* 清晰的目录结构适合各种深度学习的项目
+* json配置文件支持方面的调整参数
+* 自定义命令行参数
+* 支持训练过程中的数据的保存和使用
+* 形象定义的类方便快速的开发新的功能
   * `BaseTrainer` handles checkpoint saving/resuming, training process logging, and more.
   * `BaseDataLoader` handles batch generation, data shuffling, and validation data splitting.
   * `BaseModel` provides basic model summary.
 
-## Folder Structure
+## 目录结构
   ```
   pytorch-template/
   │
@@ -92,28 +61,24 @@ PyTorch deep learning project made easy.
       └── ...
   ```
 
-## Usage
-The code in this repo is an MNIST example of the template.
+## 如何训练使用
 Try `python train.py -c config.json` to run code.
 
-### Config file format
-Config files are in `.json` format:
+### 修改配置文件
 ```javascript
 {
-  "name": "Mnist_LeNet",        // training session name
-  "n_gpu": 1,                   // number of GPUs to use for training.
+  "name": "Mnist_LeNet",        // 训练系列的名称
+  "n_gpu": 1,                   // 训练的时候使用的gpu的个数
   
   "arch": {
-    "type": "MnistModel",       // name of model architecture to train
-    "args": {
-
-    }                
+    "type": "MnistModel",       // 训练的模型的框架的名字
+    "args": {}
   },
   "data_loader": {
-    "type": "MnistDataLoader",         // selecting data loader
+    "type": "MnistDataLoader",         // 选择 data loader
     "args":{
-      "data_dir": "data/",             // dataset path
-      "batch_size": 64,                // batch size
+      "data_dir": "data/",             // dataset 的路径
+      "batch_size": 64,                // batch size 的大小
       "shuffle": true,                 // shuffle training data before splitting
       "validation_split": 0.1          // size of validation dataset. float(portion) or int(number of samples)
       "num_workers": 2,                // number of cpu processes to be used for data loading
@@ -152,48 +117,35 @@ Config files are in `.json` format:
 }
 ```
 
-Add addional configurations if you need.
-
-### Using config files
-Modify the configurations in `.json` config files, then run:
-
+### 使用配置文件
   ```
   python train.py --config config.json
   ```
 
-### Resuming from checkpoints
-You can resume from a previously saved checkpoint by:
+### 训练重新开始
+你可以选择重新开始训练从先前训练好的模型数据:
 
   ```
   python train.py --resume path/to/checkpoint
   ```
 
-### Using Multiple GPU
-You can enable multi-GPU training by setting `n_gpu` argument of the config file to larger number.
-If configured to use smaller number of gpu than available, first n devices will be used by default.
-Specify indices of available GPUs by cuda environmental variable.
+### 使用多个GPU
   ```
   python train.py --device 2,3 -c config.json
-  ```
-  This is equivalent to
-  ```
+  #等价于:
   CUDA_VISIBLE_DEVICES=2,3 python train.py -c config.py
   ```
 
-## Customization
+## 自定义
 
-### Project initialization
-Use the `new_project.py` script to make your new project directory with template files.
-`python new_project.py ../NewProject` then a new project folder named 'NewProject' will be made.
-This script will filter out unneccessary files like cache, git files or readme file. 
+### 项目初始化
+使用 脚本`new_project.py` 初始化一个新的项目,可以创建一个名叫 'NewProject'的项目文件夹.文本可以过滤掉一些没有用的文件夹.
+```shell
+python new_project.py ../NewProject
+```
 
-### Custom CLI options
-
-Changing values of config file is a clean, safe and easy way of tuning hyperparameters. However, sometimes
-it is better to have command line options if some values need to be changed too often or quickly.
-
-This template uses the configurations stored in the json file by default, but by registering custom options as follows
-you can change some of them using CLI flags.
+### 定义命令行参数
+通过配置文件修改超参数是简单和方便的，但是对于经常修改的参数最好可以支持命令行的方式输入,可以通过下面的方式自定义需要命令行输入的参数,其中的target指的是配置文件的dict参数的一个序列：optimizer->args->lr: python train.py --lr 0.01
 
   ```python
   # simple class-like object having 3 attributes, `flags`, `type`, `target`.
@@ -204,37 +156,32 @@ you can change some of them using CLI flags.
       # options added here can be modified by command line flags.
   ]
   ```
-`target` argument should be sequence of keys, which are used to access that option in the config dict. In this example, `target` 
-for the learning rate option is `('optimizer', 'args', 'lr')` because `config['optimizer']['args']['lr']` points to the learning rate.
-`python train.py -c config.json --bs 256` runs training with options given in `config.json` except for the `batch size`
-which is increased to 256 by command line options.
 
+### 加载数据
+* **如何自定义开发自己的加载数据的功能**
 
-### Data Loader
-* **Writing your own data loader**
-
-1. **Inherit ```BaseDataLoader```**
+1. **继承 ```BaseDataLoader```**
 
     `BaseDataLoader` is a subclass of `torch.utils.data.DataLoader`, you can use either of them.
 
-    `BaseDataLoader` handles:
-    * Generating next batch
+    `BaseDataLoader` 包含方法:
+    * 生成下一个 bach
     * Data shuffling
-    * Generating validation data loader by calling
+    * 生成 validation data loader by calling
     `BaseDataLoader.split_validation()`
 
-* **DataLoader Usage**
+* **DataLoader 使用**
 
-  `BaseDataLoader` is an iterator, to iterate through batches:
+  `BaseDataLoader` 是一个迭代器,迭代batches:
   ```python
   for batch_idx, (x_batch, y_batch) in data_loader:
       pass
   ```
-* **Example**
+* **例子**
 
   Please refer to `data_loader/data_loaders.py` for an MNIST data loading example.
 
-### Trainer
+### 训练
 * **Writing your own trainer**
 
 1. **Inherit ```BaseTrainer```**
@@ -259,7 +206,7 @@ which is increased to 256 by command line options.
 
   `Trainer.__init__` takes an optional argument, `len_epoch` which controls number of batches(steps) in each epoch.
 
-### Model
+### 自定义模型
 * **Writing your own model**
 
 1. **Inherit `BaseModel`**
@@ -276,10 +223,10 @@ which is increased to 256 by command line options.
 
   Please refer to `model/model.py` for a LeNet example.
 
-### Loss
+### 自定义损失函数
 Custom loss functions can be implemented in 'model/loss.py'. Use them by changing the name given in "loss" in config file, to corresponding name.
 
-### Metrics
+### 自定义Metric
 Metric functions are located in 'model/metric.py'.
 
 You can monitor multiple metrics by providing a list in the configuration file, e.g.:
@@ -287,7 +234,7 @@ You can monitor multiple metrics by providing a list in the configuration file, 
   "metrics": ["accuracy", "top_k_acc"],
   ```
 
-### Additional logging
+### 自定义log信息
 If you have additional information to be logged, in `_train_epoch()` of your trainer class, merge them with `log` as shown below before returning:
 
   ```python
@@ -296,10 +243,10 @@ If you have additional information to be logged, in `_train_epoch()` of your tra
   return log
   ```
 
-### Testing
+### 验证
 You can test trained model by running `test.py` passing path to the trained checkpoint by `--resume` argument.
 
-### Validation data
+### 评估数据
 To split validation data from a data loader, call `BaseDataLoader.split_validation()`, then it will return a data loader for validation of size specified in your config file.
 The `validation_split` can be a ratio of validation set per total data(0.0 <= float < 1.0), or the number of samples (0 <= int < `n_total_samples`).
 
@@ -316,7 +263,7 @@ The checkpoints will be saved in `save_dir/name/timestamp/checkpoint_epoch_n`, w
 
 A copy of config file will be saved in the same folder.
 
-**Note**: checkpoints contain:
+**Note**: checkpoints 包含:
   ```python
   {
     'arch': arch,
@@ -328,16 +275,16 @@ A copy of config file will be saved in the same folder.
   }
   ```
 
-### Tensorboard Visualization
+### Tensorboard 可视化
 This template supports Tensorboard visualization by using either  `torch.utils.tensorboard` or [TensorboardX](https://github.com/lanpa/tensorboardX).
 
-1. **Install**
+1. **安装**
 
     If you are using pytorch 1.1 or higher, install tensorboard by 'pip install tensorboard>=1.14.0'.
 
     Otherwise, you should install tensorboardx. Follow installation guide in [TensorboardX](https://github.com/lanpa/tensorboardX).
 
-2. **Run training** 
+2. **训练中使用** 
 
     Make sure that `tensorboard` option in the config file is turned on.
 
@@ -345,7 +292,7 @@ This template supports Tensorboard visualization by using either  `torch.utils.t
      "tensorboard" : true
     ```
 
-3. **Open Tensorboard server** 
+3. **开启 Tensorboard 服务进行可视化** 
 
     Type `tensorboard --logdir saved/log/` at the project root, then server will open at `http://localhost:6006`
 
@@ -354,25 +301,3 @@ If you need more visualizations, use `add_scalar('tag', data)`, `add_image('tag'
 `add_something()` methods in this template are basically wrappers for those of `tensorboardX.SummaryWriter` and `torch.utils.tensorboard.SummaryWriter` modules. 
 
 **Note**: You don't have to specify current steps, since `WriterTensorboard` class defined at `logger/visualization.py` will track current steps.
-
-## Contribution
-Feel free to contribute any kind of function or enhancement, here the coding style follows PEP8
-
-Code should pass the [Flake8](http://flake8.pycqa.org/en/latest/) check before committing.
-
-## TODOs
-
-- [ ] Multiple optimizers
-- [ ] Support more tensorboard functions
-- [x] Using fixed random seed
-- [x] Support pytorch native tensorboard
-- [x] `tensorboardX` logger support
-- [x] Configurable logging layout, checkpoint naming
-- [x] Iteration-based training (instead of epoch-based)
-- [x] Adding command line option for fine-tuning
-
-## License
-This project is licensed under the MIT License. See  LICENSE for more details
-
-## Acknowledgements
-This project is inspired by the project [Tensorflow-Project-Template](https://github.com/MrGemy95/Tensorflow-Project-Template) by [Mahmoud Gemy](https://github.com/MrGemy95)
