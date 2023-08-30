@@ -23,11 +23,9 @@ PyTorch deep learning project made easy.
   │
   ├── train.py - main script to start training
   ├── test.py - evaluation of trained model
-  │
-  ├── config.json - holds configuration for training
-  ├── parse_config.py - class to handle config file and cli options
-  │
-  ├── new_project.py - initialize new project with template files
+  ├── config
+  │   ├── config.json - holds configuration for training
+  │   └── parse_config.py - class to handle config file and cli options
   │
   ├── base/ - abstract base classes
   │   ├── base_data_loader.py
@@ -62,7 +60,8 @@ PyTorch deep learning project made easy.
   ```
 
 ## 如何训练使用
-Try `python train.py -c config.json` to run code.
+
+运行命令 `python train.py -c config.json` 进行训练.
 
 ### 修改配置文件
 ```javascript
@@ -116,15 +115,8 @@ Try `python train.py -c config.json` to run code.
   }
 }
 ```
-
-### 使用配置文件
-  ```
-  python train.py --config config.json
-  ```
-
 ### 训练重新开始
 你可以选择重新开始训练从先前训练好的模型数据:
-
   ```
   python train.py --resume path/to/checkpoint
   ```
@@ -136,15 +128,9 @@ Try `python train.py -c config.json` to run code.
   CUDA_VISIBLE_DEVICES=2,3 python train.py -c config.py
   ```
 
-## 自定义
+## 新增实验项
 
-### 项目初始化
-使用 脚本`new_project.py` 初始化一个新的项目,可以创建一个名叫 'NewProject'的项目文件夹.文本可以过滤掉一些没有用的文件夹.
-```shell
-python new_project.py ../NewProject
-```
-
-### 定义命令行参数
+### 新增命令行参数
 通过配置文件修改超参数是简单和方便的，但是对于经常修改的参数最好可以支持命令行的方式输入,可以通过下面的方式自定义需要命令行输入的参数,其中的target指的是配置文件的dict参数的一个序列：optimizer->args->lr: python train.py --lr 0.01
 
   ```python
