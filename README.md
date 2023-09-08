@@ -61,7 +61,7 @@ PyTorch deep learning project made easy.
 
 ## 如何训练使用
 
-运行命令 `python train.py -c config.json` 进行训练.
+运行命令 `python train.py -c config/config.json` 进行训练.
 
 ### 修改配置文件
 ```javascript
